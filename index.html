@@ -3,73 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Combined GitHub Pages Site</title>
+    <title>AI-Enhanced MVD Surveillance</title>
     
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            background-color: #f4f4f9;
-            color: #333;
-        }
-
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-
-        main {
-            padding: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; margin: 0; background-color: #e8eaf6; color: #333; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        header { grid-column: 1 / -1; text-align: center; padding-bottom: 20px; border-bottom: 2px solid #3f51b5; }
+        h1 { color: #3f51b5; margin: 0; }
+        .data-input, .feedback-chat { padding: 20px; border: 1px solid #c5cae9; border-radius: 8px; background-color: #f8f9fe; }
+        h2 { color: #5c6bc0; border-bottom: 1px solid #d1d9ff; padding-bottom: 10px; margin-top: 0; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #3f51b5; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin-top: 20px; font-size: 16px; transition: background-color 0.3s; }
+        button:hover { background-color: #303f9f; }
+        #prediction-output { margin-top: 20px; padding: 15px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 5px; }
+        
+        /* Chatbot Specific Styles */
+        .chat-window { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; border-radius: 5px; background-color: #fff; }
+        .chat-message { margin-bottom: 10px; padding: 8px; border-radius: 5px; max-width: 80%; }
+        .user-message { background-color: #bbdefb; margin-left: auto; text-align: right; }
+        .bot-message { background-color: #e0f7fa; text-align: left; }
+        .chat-input-area { display: flex; margin-top: 10px; }
+        .chat-input-area input { flex-grow: 1; margin-right: 10px; }
+        .chat-input-area button { margin-top: 0; }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to My Project!</h1>
-    </header>
-    
-    <main>
-        <p>This website is hosted directly from a GitHub repository using GitHub Pages. All code (HTML, CSS, JS) is in this single file.</p>
-        <button id="myButton">Click Me</button>
-        <p id="output"></p>
-    </main>
+    <div class="container">
+        <header>
+            <h1>Ethiopia MVD Surveillance & AI Feedback System</h1>
+            <p>Integrated platform for rapid case reporting and predictive analysis.</p>
+        </header>
 
-    <footer>
-        <p>&copy; 2025 Amsayaw Tefera</p>
-    </footer>
+        <section class="data-input">
+            <h2>Data Collection: Symptom & Rumor Report</h2>
+            <form id="reportForm">
+                <label for="location">Location (Woreda/Zone):</label>
+                <input type="text" id="location" required>
+                
+                <label for="symptoms">Symptoms (Free Text for NLP Analysis):</label>
+                <textarea id="symptoms" rows="3" required placeholder="Describe fever, headache, hemorrhagic signs..."></textarea>
+                
+                <label for="exposure">Exposure / Rumor Type:</label>
+                <select id="exposure">
+                    <option value="case-contact">Confirmed Case Contact</option>
+                    <option value="bat-cave-visit">Bat/Cave Visit</option>
+                    <option value="unexplained-death">Community Unexplained Death</option>
+                    <option value="burial-resistance">Burial Resistance Rumor</option>
+                </select>
+                
+                <button type="submit">Submit Report & Trigger AI Check</button>
+            </form>
+            
+            <button id="getPrediction">Get Latest Predictive Risk</button>
+            <div id="prediction-output">
+                **Risk Status:** Waiting for AI Model Response...
+            </div>
+        </section>
+
+        <section class="feedback-chat">
+            <h2>AI Risk Communication Chatbot</h2>
+            <div class="chat-window" id="chatWindow">
+                <div class="chat-message bot-message">Hello! I am the MVD Info Bot. Ask me about symptoms, prevention, or burial protocols.</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type your question..." onkeydown="if(event.keyCode===13) document.getElementById('sendChat').click()">
+                <button id="sendChat">Send</button>
+            </div>
+        </section>
+    </div>
 
     <script>
-        document.getElementById('myButton').addEventListener('click', function() {
-            const outputElement = document.getElementById('output');
-            outputElement.textContent = 'Button clicked successfully! JavaScript is running.';
-            console.log('User interacted with the button.');
-        });
-    </script>
-</body>
-</html>
-    
-    <main>
-        <p>This website is hosted directly from a GitHub repository using GitHub Pages. All code (HTML, CSS, JS) is in this single file.</p>
-        <button id="myButton">Click Me</button>
-        <p id="output"></p>
-    </main>
+        // --- 1. SIMULATED API ENDPOINTS ---
+        // In a real application, these URLs would point to your hosted backend (e.g., AWS Lambda, Google Cloud Run)
+        const REPORT_API = 'https://api.your-mvd-backend.com/report';
+        const PREDICTION_API = 'https://api.your-mvd-backend.com/predictive-model';
+        const CHATBOT_API = 'https://api.your-mvd-backend.com/chatbot';
 
-    <footer>
-        <p>&copy; 2025 Amsayaw Tefera</p>
-    </footer>
+        // --- 2. REPORT SUBMISSION (Triggers NLP/Data Quality AI) ---
+        document.getElementById('reportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const reportData = {
+                location: document.getElementById('location').value,
+                symptoms: document.getElementById('symptoms').value,
+                exposure: document.getElementById('exposure').value
+            };
 
-    <script>
-        document.getElementById('myButton').addEventListener('click', function() {
-            const outputElement = document.getElementById('output');
-            outputElement.textContent = 'Button clicked successfully! JavaScript is running.';
-            console.log('User interacted with the button.');
+            // Simulate sending data to the backend AI service (using fetch)
+            console.log("Sending report data:", reportData);
+            
+            // fetch(REPORT_API, { method: 'POST', body: JSON.stringify(reportData) })
+            //     .then(response => response.json())
+            //     .then(aiResult => {
+            //         alert(`Report Submitted! AI Data Quality Score: ${aiResult.qualityScore} | NLP Flag: ${aiResult.nlpFlag}`);
+            //     })
+            //     .catch(error => alert("Submission Failed (CORS/API Error). Check console."));
+
+            // --- SIMULATION SUCCESS MESSAGE ---
+            alert("Report Submitted! Backend AI is processing NLP and Data Quality checks.");
+            document.getElementById('reportForm').reset();
         });
+
+        // --- 3. PREDICTIVE RISK (Fetches AI Model Output) ---
+        document.getElementById('getPrediction').addEventListener('click', function() {
+            const outputDiv = document.getElementById('prediction-output');
+            outputDiv.innerHTML = 'Fetching latest model results...';
+            
+            // Simulate fetching prediction data from the AI service
+            // fetch(PREDICTION_API)
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         outputDiv.innerHTML = `**Risk Status:** ${data.riskLevel}<br>
+            //                             **Forecasted Cases (7 days):** ${data.cases7Day}<br>
+            //                             **High-Risk Zone:** ${data.highRiskZone}`;
+            //     })
+            //     .catch(error => outputDiv.innerHTML = '**Risk Status:** Error retrieving prediction. Check API connection.');
+
+            // --- SIMULATION RESPONSE ---
+            setTimeout(() => {
+                const riskLevel = ["HIGH", "MEDIUM", "LOW"][Math.floor(Math.random() * 3)];
+                const cases = Math.floor(Math.random() * 15) + 5;
+                const zone = ["Amhara", "Oromia", "South Region", "Gambella"][Math.floor(Math.random() * 4)];
+                
+                outputDiv.innerHTML = `**Risk Status:** <span style="color: ${riskLevel === 'HIGH' ? 'red' : riskLevel === 'MEDIUM' ? 'orange' : 'green'};">${riskLevel}</span><br>
+                                    **Forecasted Cases (7 days):** ${cases}<br>
+                                    **High-Risk Zone:** ${zone}`;
+            }, 1500); // 1.5 second delay
+        });
+
+        // --- 4. CHATBOT SIMULATION (Interactive Feedback AI) ---
+        const chatWindow = document.getElementById('chatWindow');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatButton = document.getElementById('sendChat');
+
+        function appendMessage(message, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-message ${isUser ? 'user-message' : 'bot-message'}`;
+            msgDiv.textContent = message;
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight; // Scroll to bottom
+        }
+
+        sendChatButton.addEventListener('click', function() {
+            const userText = chatInput.value.trim();
+            if (userText === '') return;
+
+            appendMessage(userText, true);
+            chatInput.value = '';
+
+            // Simulate sending message to LLM/Conversational AI service
+            // fetch(CHATBOT_API, { method: 'POST', body: JSON.stringify({ message: userText }) })
+            //     .then(response => response.json())
+            //     .then(aiResponse => appendMessage(aiResponse.reply, false))
+            //     .catch(() => appendMessage("Sorry, the MVD Chatbot is offline right now.", false));
+            
+            // --- SIMULATION RESPONSE ---
+            setTimeout(() => {
+                let botReply;
+                if (userText.toLowerCase().includes('symptoms')) {
+                    botReply = "MVD symptoms start abruptly: fever, severe headache, malaise, and muscle pain. Later, vomiting, diarrhea, and hemorrhagic signs may appear. Seek care immediately.";
+                } else if (userText.toLowerCase().includes('prevention')) {
+                    botReply = "Prevention involves avoiding contact with bats/caves, proper burial protocols, and strict infection control if caring for the sick.";
+                } else {
+                    botReply = "Thank you for your question. Based on current FMoH guidelines, the information you need is currently...";
+                }
+                appendMessage(botReply, false);
+            }, 1000); // 1 second delay
+        });
+
     </script>
 </body>
 </html>
