@@ -53,3 +53,23 @@
     </script>
 </body>
 </html>
+    
+    <main>
+        <p>This website is hosted directly from a GitHub repository using GitHub Pages. All code (HTML, CSS, JS) is in this single file.</p>
+        <button id="myButton">Click Me</button>
+        <p id="output"></p>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Amsayaw Tefera</p>
+    </footer>
+
+    <script>
+        document.getElementById('myButton').addEventListener('click', function() {
+            const outputElement = document.getElementById('output');
+            outputElement.textContent = 'Button clicked successfully! JavaScript is running.';
+            console.log('User interacted with the button.');
+        });
+    </script>
+</body>
+</html>
